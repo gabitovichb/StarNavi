@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'authorize',
+    'publish',
     'debug_toolbar',
     'corsheaders',
 ]
