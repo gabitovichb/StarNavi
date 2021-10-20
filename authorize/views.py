@@ -7,9 +7,6 @@ from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserAc
 from .models import User
 
 
-
-
-
 class UserRegistrationView(CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = UserRegistrationSerializer
@@ -25,22 +22,24 @@ class UserRegistrationView(CreateAPIView):
             'status code': status_code,
             'message': 'User registered  successfully',
         }
+        
         return Response(response, status=status_code)
 
 
 class UserLoginView(RetrieveAPIView):
-
     permission_classes = (AllowAny,)
     serializer_class = UserLoginSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
+        user_profile = User.objects.filter(username=request.data['username'])
         response = {
             'success': 'True',
             'status code': status.HTTP_200_OK,
             'message': 'User logged in  successfully',
             'token': serializer.data['token'],
+            'id': user_profile[0].id
             }
         status_code = status.HTTP_200_OK
 
@@ -73,6 +72,7 @@ class UserProfileView(RetrieveAPIView):
                 'message': 'User does not exists',
                 'error': str(e)
                 }
+
         return Response(response, status=status_code)
 
 
