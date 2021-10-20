@@ -3,12 +3,16 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIVie
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from . import serializers
-from . import models
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserActivitySerializer
+from .models import User
+
+
+
+
 
 class UserRegistrationView(CreateAPIView):
     permission_classes = (AllowAny,)
-    serializer_class = serializers.UserRegistrationSerializer
+    serializer_class = UserRegistrationSerializer
 
     def post(self, request):
         payload = request.data
@@ -27,7 +31,7 @@ class UserRegistrationView(CreateAPIView):
 class UserLoginView(RetrieveAPIView):
 
     permission_classes = (AllowAny,)
-    serializer_class = serializers.UserLoginSerializer
+    serializer_class = UserLoginSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -47,7 +51,7 @@ class UserProfileView(RetrieveAPIView):
 
     def get(self, request):
         try:
-            user_profile = models.User.objects.get(username=request.user)
+            user_profile = User.objects.get(username=request.user)
             status_code = status.HTTP_200_OK
             response = {
                 'success': 'true',
@@ -70,3 +74,8 @@ class UserProfileView(RetrieveAPIView):
                 'error': str(e)
                 }
         return Response(response, status=status_code)
+
+
+class ActivityUserView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserActivitySerializer

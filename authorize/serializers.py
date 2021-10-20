@@ -4,18 +4,18 @@ from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 from rest_framework.response import Response
 
-from . import models
+from .models import User
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.User
+        model = User
         fields = ('username', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = models.User.objects.create_user(**validated_data)
+        user = User.objects.create_user(**validated_data)
         return user
 
 
@@ -40,7 +40,7 @@ class UserLoginSerializer(serializers.Serializer):
             payload = JWT_PAYLOAD_HANDLER(user)
             jwt_token = JWT_ENCODE_HANDLER(payload)
             update_last_login(None, user)
-        except models.User.DoesNotExist:
+        except User.DoesNotExist:
             raise serializers.ValidationError(
                 'User with given email and password does not exists'
             )
@@ -48,3 +48,11 @@ class UserLoginSerializer(serializers.Serializer):
             'username': user.username,
             'token': jwt_token
         }
+
+
+class UserActivitySerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = User
+        fields = ('last_login',)
